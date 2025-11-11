@@ -1,0 +1,97 @@
+ #include<stdio.h>
+ #include<stdlib.h>
+ #include<string.h>
+ #define MAX_ORDERS100
+ typedef struct {
+ int order_id;
+char customer_name[50];
+ } Job;
+ Job queue[MAX_ORDERS];
+ int front =-1;
+ int rear =-1;
+ int max_orders_capacity = MAX_ORDERS;
+ void addJob(int order_id, const char*
+ customer_name) {
+ if (rear == max_orders_capacity- 1) {
+ printf("Queue is full. Cannot add order %d.\n",
+ order_id);
+ return;
+ }
+ if (front ==-1) {
+ front = 0;
+ }
+ rear++;
+ queue[rear].order_id = order_id;
+ strcpy(queue[rear].customer_name,
+ customer_name);
+printf("Order %d for %s added to the queue.\n",
+ order_id, customer_name);
+ }
+ Job deleteJob() {
+ Job temp;
+ temp.order_id =-1;
+ strcpy(temp.customer_name, "");
+ if (front ==-1 || front > rear) {
+ printf("Queue is empty. No jobs to delete.\n");
+ return temp;
+ }
+ temp =queue[front];
+ front++;
+ if (front > rear) {
+ front =-1;
+ rear =-1;
+ }
+ printf("Order %d for %s served.\n",
+ temp.order_id, temp.customer_name);
+ return temp;
+}
+ void displayQueue() {
+ if (front ==-1) {
+ printf("The queue is empty.\n");
+ return;
+ }
+ printf("\nCurrent Orders in Queue (First-Come,
+ First-Served):\n");
+ for (int i = front; i <= rear; i++) {
+ printf(" Order ID: %d, Customer: %s\n",
+ queue[i].order_id, queue[i].customer_name);
+ }
+ }
+ int main() {
+ int choice;
+ int order_id;
+ char customer_name[50];
+ max_orders_capacity = 5;
+while (1) {
+ printf("\nPizza Parlor Order System\n");
+ printf("1. Add Order\n");
+ printf("2. Serve Order\n");
+ printf("3. Display Queue\n");
+ printf("4. Exit\n");
+ printf("Enter your choice: ");
+ scanf("%d", &choice);
+ switch (choice) {
+ case 1:
+ printf("Enter order ID: ");
+ scanf("%d", &order_id);
+ printf("Enter customer name: ");
+ scanf("%s", customer_name);
+ addJob(order_id, customer_name);
+ break;
+ case 2:
+ deleteJob();
+ break;
+ case 3:
+ displayQueue();
+ break;
+ case 4:
+printf("Exiting system. Goodbye!\n");
+ exit(0);
+ default:
+ printf("Invalid choice. Please try
+ again.\n");
+ }
+ }
+ return 0;
+ }
+ 
