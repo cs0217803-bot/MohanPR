@@ -1,0 +1,133 @@
+package sample;
+
+import java.io.*;
+import java.util.*;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.stage.Stage;
+
+public class PatientStats extends Application {
+
+    static List<Integer> ageList = new ArrayList<>();
+    static List<Integer> heartRateList = new ArrayList<>();
+    static List<Integer> bpList = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        readCSV();
+        calculateStats();
+
+        launch(args);
+    }
+
+    // Method to read CSV file
+    static void readCSV() {
+
+        try {
+
+            BufferedReader br =
+                    new BufferedReader(new FileReader("patients.csv"));
+
+            String line;
+
+            // Skip header row
+            br.readLine();
+
+            while ((line = br.readLine()) != null) {
+
+                String[] data = line.split(",");
+
+                ageList.add(Integer.parseInt(data[1]));
+                heartRateList.add(Integer.parseInt(data[2]));
+                bpList.add(Integer.parseInt(data[3]));
+            }
+
+            br.close();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    // Method to calculate statistics
+    static void calculateStats() {
+
+        DescriptiveStatistics ageStats =
+                new DescriptiveStatistics();
+
+        DescriptiveStatistics heartStats =
+                new DescriptiveStatistics();
+
+        DescriptiveStatistics bpStats =
+                new DescriptiveStatistics();
+
+        // Add age data
+        for (int age : ageList) {
+            ageStats.addValue(age);
+        }
+
+        // Add heart rate data
+        for (int hr : heartRateList) {
+            heartStats.addValue(hr);
+        }
+
+        // Add blood pressure data
+        for (int bp : bpList) {
+            bpStats.addValue(bp);
+        }
+
+        // Display statistics
+        System.out.println("Average Age       : "
+                + ageStats.getMean());
+
+        System.out.println("Median Heart Rate : "
+                + heartStats.getPercentile(50));
+
+        System.out.println("BP Standard Deviation : "
+                + bpStats.getStandardDeviation());
+    }
+
+    @Override
+    public void start(Stage stage) {
+
+        stage.setTitle("Patient Statistics Chart");
+
+        // Create axes
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+
+        // Create line chart
+        LineChart<Number, Number> lineChart =
+                new LineChart<>(xAxis, yAxis);
+
+        // Create series
+        XYChart.Series<Number, Number> series =
+                new XYChart.Series<>();
+
+        series.setName("Heart Rate");
+
+        // Add data points
+        for (int i = 0; i < heartRateList.size(); i++) {
+
+            series.getData().add(
+                    new XYChart.Data<>(i, heartRateList.get(i))
+            );
+        }
+
+        // Add series to chart
+        lineChart.getData().add(series);
+
+        // Create scene
+        Scene scene = new Scene(lineChart, 600, 400);
+
+        stage.setScene(scene);
+        stage.show();
+    }
+}
